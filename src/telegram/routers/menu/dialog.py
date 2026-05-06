@@ -101,6 +101,13 @@ menu = Window(
             url=Format("{support_url}"),
         ),
     ),
+    Row(
+        SwitchTo(
+            text=I18nFormat("btn-menu.about"),
+            id="about",
+            state=MainMenu.ABOUT,
+        ),
+    ),
     *custom_buttons,
     Row(
         Start(
@@ -284,6 +291,60 @@ invite_about = Window(
     getter=invite_about_getter,
 )
 
+about = Window(
+    Banner(BannerName.MENU),
+    I18nFormat("msg-menu-about"),
+    Row(
+        SwitchTo(
+            text=I18nFormat("btn-about.privacy-policy"),
+            id="privacy_policy",
+            state=MainMenu.PRIVACY_POLICY,
+        ),
+        SwitchTo(
+            text=I18nFormat("btn-about.user-agreement"),
+            id="user_agreement",
+            state=MainMenu.USER_AGREEMENT,
+        ),
+    ),
+    Row(
+        SwitchTo(
+            text=I18nFormat("btn-back.general"),
+            id="back",
+            state=MainMenu.MAIN,
+        ),
+    ),
+    IgnoreUpdate(),
+    state=MainMenu.ABOUT,
+)
+
+privacy_policy = Window(
+    Banner(BannerName.MENU),
+    I18nFormat("msg-menu-privacy-policy"),
+    Row(
+        SwitchTo(
+            text=I18nFormat("btn-back.general"),
+            id="back",
+            state=MainMenu.ABOUT,
+        ),
+    ),
+    IgnoreUpdate(),
+    state=MainMenu.PRIVACY_POLICY,
+)
+
+user_agreement = Window(
+    Banner(BannerName.MENU),
+    I18nFormat("msg-menu-user-agreement"),
+    Row(
+        SwitchTo(
+            text=I18nFormat("btn-back.general"),
+            id="back",
+            state=MainMenu.ABOUT,
+        ),
+    ),
+    IgnoreUpdate(),
+    state=MainMenu.USER_AGREEMENT,
+)
+
 
 device_confirm_reissue = Window(
     Banner(BannerName.MENU),
@@ -314,4 +375,7 @@ router = Dialog(
     device_confirm_reissue,
     invite,
     invite_about,
+    about,
+    privacy_policy,
+    user_agreement,
 )
