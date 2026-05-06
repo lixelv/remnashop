@@ -1,5 +1,5 @@
 import re
-from typing import Any, Iterable
+from typing import Any, Iterable, Protocol
 from uuid import UUID
 
 from adaptix import Retort
@@ -8,6 +8,21 @@ from fluentogram.exceptions import KeyNotFoundError
 from loguru import logger
 
 from src.core.utils.converters import event_to_key
+
+
+class TranslatorStorage(Protocol):
+    def get_translators_for_language(self, locale: str) -> Iterable[FluentTranslator]: ...
+
+
+class ChainedTranslatorStorage:
+    def __init__(self, *storages: TranslatorStorage) -> None:
+        self._storages = storages
+
+    def get_translators_for_language(self, locale: str) -> list[FluentTranslator]:
+        translators: list[FluentTranslator] = []
+        for storage in self._storages:
+            translators.extend(list(storage.get_translators_for_language(locale)))
+        return translators
 
 
 class TranslatorRunnerImpl(TranslatorRunner):
@@ -31,6 +46,8 @@ class TranslatorRunnerImpl(TranslatorRunner):
         try:
             text = self._get_translation(key, **translated_data)
         except KeyNotFoundError:
+            if kwargs:
+                raise
             logger.warning(f"Translation key '{key}' not found, falling back to the key itself")
             text = key
         processed_text = self._postprocess(text)
