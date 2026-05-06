@@ -31,8 +31,6 @@ class TranslatorRunnerImpl(TranslatorRunner):
         try:
             text = self._get_translation(key, **translated_data)
         except KeyNotFoundError:
-            if kwargs:
-                raise
             logger.warning(f"Translation key '{key}' not found, falling back to the key itself")
             text = key
         processed_text = self._postprocess(text)
