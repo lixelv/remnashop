@@ -46,7 +46,6 @@ btn-menu =
     .subscription = 💳 Подписка
     .invite = 👥 Пригласить
     .support = 🆘 Поддержка
-    .about = ℹ️ О сервисе
     .dashboard = 🛠 Панель управления
 
     .connect-not-available =
@@ -62,10 +61,6 @@ btn-invite =
     .send = 📩 Пригласить
     .qr = 🧾 QR-код
     .withdraw-points = 💎 Обменять баллы
-
-btn-about =
-    .privacy-policy = 🔒 Политика конфиденциальности
-    .user-agreement = 📄 Пользовательское соглашение
 
 btn-dashboard =
     .statistics = 📊 Статистика
