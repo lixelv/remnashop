@@ -687,6 +687,10 @@ msg-remnawave-main =
     [one] ядро
     [few] ядра
     *[more] ядер
+    } { $cpu_threads } { $cpu_threads ->
+    [one] поток
+    [few] потока
+    *[more] потоков
     }
     • <b>ОЗУ</b>: { $ram_used } / { $ram_total } ({ $ram_used_percent }%)
     • <b>Аптайм</b>: { $uptime }

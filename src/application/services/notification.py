@@ -37,7 +37,7 @@ from src.core.enums import Locale, Role
 from src.core.types import AnyKeyboard
 from src.infrastructure.services import NotificationQueue
 from src.infrastructure.services.event_bus import on_event
-from src.telegram.keyboards import get_close_notification_button
+from src.telegram.states import Notification
 
 
 class NotificationService(Notifier):
@@ -292,11 +292,10 @@ class NotificationService(Notifier):
         locale: Locale,
         chat_id: int,
     ) -> Optional[AnyKeyboard]:
-        close_keyboard = self._get_default_keyboard(get_close_notification_button())
-
         if reply_markup is None:
             if not disable_default_markup and delete_after is None:
-                return self._translate_keyboard_text(close_keyboard, locale)
+                close_button = self._get_close_notification_button(locale=locale)
+                return self._get_default_keyboard(close_button)
             return None
 
         translated_markup = self._translate_keyboard_text(reply_markup, locale)
@@ -306,14 +305,18 @@ class NotificationService(Notifier):
 
         if isinstance(translated_markup, InlineKeyboardMarkup):
             builder = InlineKeyboardBuilder.from_markup(translated_markup)
-            builder.row(get_close_notification_button())
-            return self._translate_keyboard_text(builder.as_markup(), locale)
+            builder.row(self._get_close_notification_button(locale))
+            return builder.as_markup()
 
         logger.warning(
             f"Unsupported reply_markup type '{type(reply_markup).__name__}' "
             f"for chat '{chat_id}', close button skipped"
         )
         return translated_markup
+
+    def _get_close_notification_button(self, locale: Locale) -> InlineKeyboardButton:
+        text = self._get_translated_text(locale, "btn-common.notification-close")
+        return InlineKeyboardButton(text=text, callback_data=Notification.CLOSE.state)
 
     def _get_default_keyboard(self, button: InlineKeyboardButton) -> InlineKeyboardMarkup:
         builder = InlineKeyboardBuilder([[button]])
