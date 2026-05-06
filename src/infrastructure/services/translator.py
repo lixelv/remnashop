@@ -11,6 +11,8 @@ from src.core.utils.converters import event_to_key
 
 
 class TranslatorStorage(Protocol):
+    def set_locales_map(self, locales_map: dict[str, tuple[str, ...]]) -> None: ...
+
     def get_translators_for_language(self, locale: str) -> Iterable[FluentTranslator]: ...
 
 
@@ -18,11 +20,23 @@ class ChainedTranslatorStorage:
     def __init__(self, *storages: TranslatorStorage) -> None:
         self._storages = storages
 
+    def set_locales_map(self, locales_map: dict[str, tuple[str, ...]]) -> None:
+        for storage in self._storages:
+            storage.set_locales_map(locales_map)
+
     def get_translators_for_language(self, locale: str) -> list[FluentTranslator]:
         translators: list[FluentTranslator] = []
         for storage in self._storages:
             translators.extend(list(storage.get_translators_for_language(locale)))
         return translators
+
+    def __getattr__(self, name: str) -> Any:
+        """
+        Proxy any extra storage API (if fluentogram calls it) to the first storage.
+
+        This keeps compatibility if fluentogram storage API expands.
+        """
+        return getattr(self._storages[0], name)
 
 
 class TranslatorRunnerImpl(TranslatorRunner):
